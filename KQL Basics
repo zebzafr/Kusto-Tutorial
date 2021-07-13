@@ -1,0 +1,37 @@
+StormEvents
+| project State, StormSummary
+
+
+StormEvents
+| where EventType == 'Flood' and State == 'CALIFORNIA'
+| where StartTime > datetime(2007-02-01) and StartTime < datetime(2007-03-01)
+| project StartTime, EndTime, EventType, State, EpisodeNarrative
+
+
+cluster("help").database("Samples").StormEvents //choose the table
+| take 10 //top 10 rows take is alias of limit in SQL
+| project StartTime, EndTime, EventType, State, EpisodeNarrative //project is alias for select in SQL
+
+//1. order the result using sort
+cluster("help").database("Samples").StormEvents //choose the table
+| project StartTime, EndTime, EventType, State, EpisodeNarrative //project is alias for select in SQL
+| take 10 //top 10 rows take is alias of limit in SQL
+| sort by StartTime desc
+
+//2. order the result using top
+cluster("help").database("Samples").StormEvents //choose the table
+| project StartTime, EndTime, EventType, State, EpisodeNarrative //project is alias for select in SQL
+//| take 10 //top 10 rows take is alias of limit in SQL
+| top 10 by StartTime desc
+
+//3. change the order of the syntax to get results matching 2. 
+cluster("help").database("Samples").StormEvents 
+| project StartTime, EndTime, EventType, State, EpisodeNarrative 
+| sort by StartTime desc
+| take 10
+
+//get derived columns using extend
+cluster("help").database("Samples").StormEvents
+| extend Duration = EndTime - StartTime  //duration is a derived column
+| limit 100
+| project StartTime, EndTime, Duration, EventType, State, EpisodeNarrative
